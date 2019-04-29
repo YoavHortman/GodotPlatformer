@@ -1,39 +1,39 @@
 [gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://KinematicBody2D.gd" type="Script" id=1]
-[ext_resource path="res://Sprites/Player/Jump1.png" type="Texture" id=2]
-[ext_resource path="res://Sprites/Player/Jump3.png" type="Texture" id=3]
-[ext_resource path="res://Sprites/Player/Jump4.png" type="Texture" id=4]
-[ext_resource path="res://Sprites/Player/Run0.png" type="Texture" id=5]
-[ext_resource path="res://Sprites/Player/Run1.png" type="Texture" id=6]
-[ext_resource path="res://Sprites/Player/Run2.png" type="Texture" id=7]
-[ext_resource path="res://Sprites/Player/Run3.png" type="Texture" id=8]
-[ext_resource path="res://Sprites/Player/Run4.png" type="Texture" id=9]
-[ext_resource path="res://Sprites/Player/Run7.png" type="Texture" id=10]
-[ext_resource path="res://Sprites/Player/Idle0.png" type="Texture" id=11]
-[ext_resource path="res://Sprites/Player/Jump0.png" type="Texture" id=12]
+[ext_resource path="res://Sprites/Player/Run0.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Player/Run1.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Player/Run2.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Player/Run3.png" type="Texture" id=5]
+[ext_resource path="res://Sprites/Player/Run4.png" type="Texture" id=6]
+[ext_resource path="res://Sprites/Player/Run7.png" type="Texture" id=7]
+[ext_resource path="res://Sprites/Player/Idle0.png" type="Texture" id=8]
+[ext_resource path="res://Sprites/Player/Jump0.png" type="Texture" id=9]
+[ext_resource path="res://Sprites/Player/Jump1.png" type="Texture" id=10]
+[ext_resource path="res://Sprites/Player/Jump3.png" type="Texture" id=11]
+[ext_resource path="res://Sprites/Player/Jump4.png" type="Texture" id=12]
 [ext_resource path="res://JungleDirtTileSet.tres" type="TileSet" id=13]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
-"frames": [ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 4 ) ],
-"loop": true,
-"name": "Fall",
-"speed": 5.0
-}, {
-"frames": [ ExtResource( 5 ), ExtResource( 6 ), ExtResource( 7 ), ExtResource( 8 ), ExtResource( 9 ), ExtResource( 10 ) ],
+"frames": [ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ), ExtResource( 7 ) ],
 "loop": true,
 "name": "Run",
 "speed": 10.0
 }, {
-"frames": [ ExtResource( 11 ) ],
+"frames": [ ExtResource( 8 ) ],
 "loop": true,
 "name": "Idle",
 "speed": 5.0
 }, {
-"frames": [ ExtResource( 12 ) ],
+"frames": [ ExtResource( 9 ) ],
 "loop": true,
 "name": "Jump",
+"speed": 10.0
+}, {
+"frames": [ ExtResource( 10 ), ExtResource( 11 ), ExtResource( 12 ) ],
+"loop": false,
+"name": "Fall",
 "speed": 10.0
 } ]
 
@@ -43,12 +43,9 @@ extents = Vector2( 14, 28 )
 [node name="World" type="Node2D"]
 
 [node name="Player" type="KinematicBody2D" parent="."]
-position = Vector2( 288, 128 )
+position = Vector2( 241.586, 127.245 )
 collision/safe_margin = 0.001
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_group_": true
-}
 
 [node name="Sprite" type="AnimatedSprite" parent="Player"]
 frames = SubResource( 1 )
@@ -57,6 +54,17 @@ animation = "Idle"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 position = Vector2( 0, 4 )
 shape = SubResource( 2 )
+
+[node name="RayCastDown" type="RayCast2D" parent="Player"]
+scale = Vector2( 9, 1 )
+enabled = true
+cast_to = Vector2( 0, 33 )
+
+[node name="RayCastRight" type="RayCast2D" parent="Player"]
+position = Vector2( 0.250351, 4.25585 )
+scale = Vector2( 1, 19 )
+enabled = true
+cast_to = Vector2( 15, 0 )
 
 [node name="TileMap" type="TileMap" parent="."]
 position = Vector2( 320, 224 )
