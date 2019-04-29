@@ -31,6 +31,7 @@ func _physics_process(delta):
 			animation = "Jump";
 		elif motion.y > 0: 
 			animation = "Fall";
+		motion.y += GRAVITY;
 	
 	$Sprite.play(animation);
 	move_and_slide(motion, UP);
