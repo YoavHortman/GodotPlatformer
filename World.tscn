@@ -55,11 +55,6 @@ visible = false
 position = Vector2( 0, 4 )
 shape = SubResource( 2 )
 
-[node name="RayCastDown" type="RayCast2D" parent="Player"]
-position = Vector2( 0, 32 )
-scale = Vector2( 9, 1 )
-cast_to = Vector2( 0, 1 )
-
 [node name="RayCastRightBottom" type="RayCast2D" parent="Player"]
 visible = false
 position = Vector2( 0, 4 )

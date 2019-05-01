@@ -33,7 +33,6 @@ func _physics_process(delta):
 
 	if (!$RayCastRightTop.is_colliding() && $RayCastRightTop2.is_colliding()) || (!$RayCastLeftEdgeGrab.is_colliding() && $RayCastLeftEdgeGrab2.is_colliding()):
 		motion.y = 0;
-		motion.x = 0;
 	
 	if $RayCastRightBottom.is_colliding() && motion.x >= 0:
 		wall_collision(-WALL_JUMP_FORCE, jump);
@@ -61,10 +60,9 @@ func _ready():
 	print("ready");
 
 func wall_collision(opposite_force, jump):
-	motion.x = 0;
 	if motion.y > 0:
 		motion.y = min(motion.y - GRAVITY * WALL_SLIDE_FRICTION, MAX_WALL_SLIDE_SPEED);
 		$Sprite.flip_h = opposite_force < 0;
-	if jump && !$RayCastDown.is_colliding():
+	if jump && !is_on_floor():
 		motion.y = JUMP_HEIGHT;
 		motion.x = opposite_force;
