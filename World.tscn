@@ -1,39 +1,39 @@
 [gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://KinematicBody2D.gd" type="Script" id=1]
-[ext_resource path="res://Sprites/Player/Run0.png" type="Texture" id=2]
-[ext_resource path="res://Sprites/Player/Run1.png" type="Texture" id=3]
-[ext_resource path="res://Sprites/Player/Run2.png" type="Texture" id=4]
-[ext_resource path="res://Sprites/Player/Run3.png" type="Texture" id=5]
-[ext_resource path="res://Sprites/Player/Run4.png" type="Texture" id=6]
-[ext_resource path="res://Sprites/Player/Run7.png" type="Texture" id=7]
-[ext_resource path="res://Sprites/Player/Idle0.png" type="Texture" id=8]
-[ext_resource path="res://Sprites/Player/Jump0.png" type="Texture" id=9]
-[ext_resource path="res://Sprites/Player/Jump1.png" type="Texture" id=10]
-[ext_resource path="res://Sprites/Player/Jump3.png" type="Texture" id=11]
-[ext_resource path="res://Sprites/Player/Jump4.png" type="Texture" id=12]
+[ext_resource path="res://Sprites/Player/Idle0.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Player/Jump1.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Player/Jump3.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Player/Jump4.png" type="Texture" id=5]
+[ext_resource path="res://Sprites/Player/Jump0.png" type="Texture" id=6]
+[ext_resource path="res://Sprites/Player/Run0.png" type="Texture" id=7]
+[ext_resource path="res://Sprites/Player/Run1.png" type="Texture" id=8]
+[ext_resource path="res://Sprites/Player/Run2.png" type="Texture" id=9]
+[ext_resource path="res://Sprites/Player/Run3.png" type="Texture" id=10]
+[ext_resource path="res://Sprites/Player/Run4.png" type="Texture" id=11]
+[ext_resource path="res://Sprites/Player/Run7.png" type="Texture" id=12]
 [ext_resource path="res://JungleDirtTileSet.tres" type="TileSet" id=13]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
-"frames": [ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ), ExtResource( 7 ) ],
-"loop": true,
-"name": "Run",
-"speed": 10.0
-}, {
-"frames": [ ExtResource( 8 ) ],
+"frames": [ ExtResource( 2 ) ],
 "loop": true,
 "name": "Idle",
 "speed": 5.0
 }, {
-"frames": [ ExtResource( 9 ) ],
+"frames": [ ExtResource( 3 ), ExtResource( 4 ), ExtResource( 5 ) ],
+"loop": false,
+"name": "Fall",
+"speed": 10.0
+}, {
+"frames": [ ExtResource( 6 ) ],
 "loop": true,
 "name": "Jump",
 "speed": 10.0
 }, {
-"frames": [ ExtResource( 10 ), ExtResource( 11 ), ExtResource( 12 ) ],
-"loop": false,
-"name": "Fall",
+"frames": [ ExtResource( 7 ), ExtResource( 8 ), ExtResource( 9 ), ExtResource( 10 ), ExtResource( 11 ), ExtResource( 12 ) ],
+"loop": true,
+"name": "Run",
 "speed": 10.0
 } ]
 
@@ -56,19 +56,42 @@ position = Vector2( 0, 4 )
 shape = SubResource( 2 )
 
 [node name="RayCastDown" type="RayCast2D" parent="Player"]
+position = Vector2( 0, 4 )
 scale = Vector2( 9, 1 )
 enabled = true
-cast_to = Vector2( 0, 33 )
+cast_to = Vector2( 0, 29 )
 
-[node name="RayCastRight" type="RayCast2D" parent="Player"]
-position = Vector2( 0.250351, 4.25585 )
+[node name="RayCastRightBottom" type="RayCast2D" parent="Player"]
+visible = false
+position = Vector2( 0, 4 )
 scale = Vector2( 1, 19 )
 enabled = true
 cast_to = Vector2( 15, 0 )
+
+[node name="RayCastRightTop" type="RayCast2D" parent="Player"]
+visible = false
+position = Vector2( 0.25, -25 )
+scale = Vector2( 1, 0.1 )
+enabled = true
+cast_to = Vector2( 15, 0 )
+
+[node name="RayCastRightTop2" type="RayCast2D" parent="Player"]
+visible = false
+position = Vector2( 0.25, -20 )
+scale = Vector2( 1, 0.1 )
+enabled = true
+cast_to = Vector2( 15, 0 )
+
+[node name="RayCastLeft" type="RayCast2D" parent="Player"]
+visible = false
+position = Vector2( 0.25, 4 )
+scale = Vector2( 1, 19 )
+enabled = true
+cast_to = Vector2( -15, 0 )
 
 [node name="TileMap" type="TileMap" parent="."]
 position = Vector2( 320, 224 )
 tile_set = ExtResource( 13 )
 cell_size = Vector2( 32, 32 )
 format = 1
-tile_data = PoolIntArray( -196604, 0, 0, -196603, 1, 0, -196602, 2, 0, -131068, 3, 0, -131067, 4, 0, -131066, 5, 0, -65532, 3, 0, -65531, 4, 0, -65530, 5, 0, 65528, 0, 0, 65529, 1, 0, 65530, 1, 0, 65531, 1, 0, 65532, 1, 0, 65533, 1, 0, 65534, 1, 0, 65535, 1, 0, 0, 1, 0, 1, 1, 0, 2, 1, 0, 3, 1, 0, 4, 1, 0, 5, 1, 0, 6, 1, 0, 7, 2, 0, 131064, 3, 0, 131065, 4, 0, 131066, 4, 0, 131067, 4, 0, 131068, 4, 0, 131069, 4, 0, 131070, 4, 0, 131071, 4, 0, 65536, 4, 0, 65537, 4, 0, 65538, 4, 0, 65539, 4, 0, 65540, 4, 0, 65541, 4, 0, 65542, 4, 0, 65543, 5, 0, 196600, 7, 0, 196601, 7, 0, 196602, 7, 0, 196603, 7, 0, 196604, 7, 0, 196605, 7, 0, 196606, 7, 0, 196607, 7, 0, 131072, 7, 0, 131073, 7, 0, 131074, 7, 0, 131075, 7, 0, 131076, 7, 0, 131077, 7, 0, 131078, 7, 0, 131079, 8, 0 )
+tile_data = PoolIntArray( -196616, 4, 0, -196615, 4, 0, -196614, 4, 0, -131080, 4, 0, -131079, 4, 0, -131078, 4, 0, -196604, 0, 0, -196603, 1, 0, -196602, 2, 0, -65544, 4, 0, -65543, 4, 0, -65542, 4, 0, -131068, 3, 0, -131067, 4, 0, -131066, 5, 0, -8, 4, 0, -7, 4, 0, -6, 4, 0, -65532, 3, 0, -65531, 4, 0, -65530, 5, 0, 65528, 0, 0, 65529, 1, 0, 65530, 1, 0, 65531, 1, 0, 65532, 1, 0, 65533, 1, 0, 65534, 1, 0, 65535, 1, 0, 0, 1, 0, 1, 1, 0, 2, 1, 0, 3, 1, 0, 4, 1, 0, 5, 1, 0, 6, 1, 0, 7, 2, 0, 131064, 3, 0, 131065, 4, 0, 131066, 4, 0, 131067, 4, 0, 131068, 4, 0, 131069, 4, 0, 131070, 4, 0, 131071, 4, 0, 65536, 4, 0, 65537, 4, 0, 65538, 4, 0, 65539, 4, 0, 65540, 4, 0, 65541, 4, 0, 65542, 4, 0, 65543, 5, 0, 196600, 7, 0, 196601, 7, 0, 196602, 7, 0, 196603, 7, 0, 196604, 7, 0, 196605, 7, 0, 196606, 7, 0, 196607, 7, 0, 131072, 7, 0, 131073, 7, 0, 131074, 7, 0, 131075, 7, 0, 131076, 7, 0, 131077, 7, 0, 131078, 7, 0, 131079, 8, 0 )
