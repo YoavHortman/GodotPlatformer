@@ -3,19 +3,26 @@ extends KinematicBody2D
 const UP = Vector2(0, -1);
 const GRAVITY = 20;
 const MAX_FALL_SPEED = 800;
-const ACCELERATION = 40;
-const JUMP_HEIGHT = -400;
+const ACCELERATION = 30;
+const INITIAL_JUMP_FORCE = -400;
+const ADDED_JUMP_FORCE = -40;
 const MAX_SPEED = 400;
 const WALL_SLIDE_FRICTION = 0.6;
 const WALL_JUMP_FORCE = 200;
-const MAX_WALL_SLIDE_SPEED = 300;
+const EDGE_HOLD_JUMP_FORCE = 300;
+const MAX_WALL_SLIDE_SPEED = 500;
+const IMMOBILTIY_AFTER_FALL_DURATION = 0.5;
 
+
+var time_since_break_fall = 0.0;
 var motion = Vector2();
+var lastFrameFallSpeed = 0;
+var break_fall = false;
 func _physics_process(delta):
 	var right = Input.is_action_pressed("ui_right");
 	var left =  Input.is_action_pressed("ui_left");
 	var jump = Input.is_action_just_pressed("ui_up");
-	var down = Input.is_action_just_pressed("ui_down");
+	var down = Input.is_action_pressed("ui_down");
 
 	var animation = "Idle";
 	var isIdle = false;
@@ -33,7 +40,7 @@ func _physics_process(delta):
 
 	if (!$RayCastRightEdgeGrab.is_colliding() && $RayCastRightEdgeGrab2.is_colliding()):
 		motion.y = 0;
-		wall_collision(-WALL_JUMP_FORCE, jump);
+		wall_collision(-EDGE_HOLD_JUMP_FORCE, jump);
 	elif (!$RayCastLeftEdgeGrab.is_colliding() && $RayCastLeftEdgeGrab2.is_colliding()):
 		motion.y = 0;
 		wall_collision(WALL_JUMP_FORCE, jump);
@@ -44,8 +51,12 @@ func _physics_process(delta):
 			wall_collision(WALL_JUMP_FORCE, jump);
 	
 	if is_on_floor():
+		if lastFrameFallSpeed >= MAX_FALL_SPEED:
+			# TODO add ability to roll
+			time_since_break_fall = 3;
+			$Camera2D.shake(0.7, 30, 5)
 		if jump:
-			motion.y = JUMP_HEIGHT;
+			motion.y = INITIAL_JUMP_FORCE;
 		if isIdle:
 			motion.x = lerp(motion.x, 0, 0.1);
 	else:
@@ -54,6 +65,14 @@ func _physics_process(delta):
 		else:
 			animation = "Fall";
 			
+	lastFrameFallSpeed = motion.y;
+	
+	if time_since_break_fall > 0:
+		motion.x = 0;
+		motion.y = 0;
+	
+	time_since_break_fall -= delta;
+	
 	motion = move_and_slide(motion, UP);
 	$Sprite.play(animation);
 
@@ -65,5 +84,5 @@ func wall_collision(opposite_force, jump):
 		motion.y = min(motion.y - GRAVITY * WALL_SLIDE_FRICTION, MAX_WALL_SLIDE_SPEED);
 		$Sprite.flip_h = opposite_force < 0;
 	if jump && !is_on_floor():
-		motion.y = JUMP_HEIGHT;
+		motion.y = INITIAL_JUMP_FORCE;
 		motion.x = opposite_force;
