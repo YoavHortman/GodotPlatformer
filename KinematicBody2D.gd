@@ -11,7 +11,7 @@ const WALL_SLIDE_FRICTION = 0.6;
 const WALL_JUMP_FORCE = 200;
 const EDGE_HOLD_JUMP_FORCE = 300;
 const MAX_WALL_SLIDE_SPEED = 500;
-const IMMOBILTIY_AFTER_FALL_DURATION = 0.5;
+const IMMOBILTIY_AFTER_FALL_DURATION = 0.8;
 
 
 var time_since_break_fall = 0.0;
@@ -51,10 +51,10 @@ func _physics_process(delta):
 			wall_collision(WALL_JUMP_FORCE, jump);
 	
 	if is_on_floor():
-		if lastFrameFallSpeed >= MAX_FALL_SPEED:
-			# TODO add ability to roll
-			time_since_break_fall = 3;
-			$Camera2D.shake(0.7, 30, 5)
+		if lastFrameFallSpeed > 400:
+			var shake_precentage = lastFrameFallSpeed / MAX_FALL_SPEED;
+			$Camera2D.shake(0.7 * shake_precentage, 300 * shake_precentage, 8 * shake_precentage)
+			time_since_break_fall = shake_precentage * IMMOBILTIY_AFTER_FALL_DURATION;
 		if jump:
 			motion.y = INITIAL_JUMP_FORCE;
 		if isIdle:
