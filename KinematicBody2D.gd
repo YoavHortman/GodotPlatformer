@@ -3,7 +3,8 @@ extends KinematicBody2D
 const UP = Vector2(0, -1);
 const GRAVITY = 20;
 const MAX_FALL_SPEED = 800;
-const ACCELERATION = 30;
+const ACCELERATION = 20;
+const BACKWARDS_ACCELERATION = 50;
 const INITIAL_JUMP_FORCE = -400;
 const ADDED_JUMP_FORCE = -40;
 const MAX_SPEED = 400;
@@ -15,20 +16,27 @@ const IMMOBILTIY_AFTER_FALL_DURATION = 0.8;
 
 
 var time_since_break_fall = 0.0;
+var time_since_dash = 0.0;
 var motion = Vector2();
 var lastFrameFallSpeed = 0;
 var break_fall = false;
+var is_dashing = false;
 func _physics_process(delta):
 	var right = Input.is_action_pressed("ui_right");
 	var left =  Input.is_action_pressed("ui_left");
-	var jump = Input.is_action_just_pressed("ui_up");
+	var jump = Input.is_action_just_pressed("ui_jump");
 	var down = Input.is_action_pressed("ui_down");
+	var roll = Input.is_action_pressed("ui_roll");
 
 	var animation = "Idle";
 	var isIdle = false;
 	motion.y = min(motion.y + GRAVITY, MAX_FALL_SPEED);
 	if right:
-		motion.x = min(motion.x + ACCELERATION, MAX_SPEED);
+		if $Sprite.flip_h: 
+			motion.x = min(motion.x + BACKWARDS_ACCELERATION, MAX_SPEED);
+		else: 
+			motion.x = min(motion.x + ACCELERATION, MAX_SPEED);
+			
 		$Sprite.flip_h = false;
 		animation = "Run";
 	elif left:
@@ -38,10 +46,10 @@ func _physics_process(delta):
 	else:
 		isIdle = true
 
-	if (!$RayCastRightEdgeGrab.is_colliding() && $RayCastRightEdgeGrab2.is_colliding()):
+	if (right && !$RayCastRightEdgeGrab.is_colliding() && $RayCastRightEdgeGrab2.is_colliding()):
 		motion.y = 0;
 		wall_collision(-EDGE_HOLD_JUMP_FORCE, jump);
-	elif (!$RayCastLeftEdgeGrab.is_colliding() && $RayCastLeftEdgeGrab2.is_colliding()):
+	elif (left && !$RayCastLeftEdgeGrab.is_colliding() && $RayCastLeftEdgeGrab2.is_colliding()):
 		motion.y = 0;
 		wall_collision(WALL_JUMP_FORCE, jump);
 	else: 	
@@ -52,9 +60,13 @@ func _physics_process(delta):
 	
 	if is_on_floor():
 		if lastFrameFallSpeed > 400:
-			var shake_precentage = lastFrameFallSpeed / MAX_FALL_SPEED;
-			$Camera2D.shake(0.7 * shake_precentage, 300 * shake_precentage, 8 * shake_precentage)
-			time_since_break_fall = shake_precentage * IMMOBILTIY_AFTER_FALL_DURATION;
+			if !roll:
+				var shake_precentage = lastFrameFallSpeed / MAX_FALL_SPEED;
+				$Camera2D.shake(0.7 * shake_precentage, 300 * shake_precentage, 8 * shake_precentage)
+				time_since_break_fall = shake_precentage * IMMOBILTIY_AFTER_FALL_DURATION;
+			else:
+				time_since_dash = 0.5;
+				is_dashing = true;
 		if jump:
 			motion.y = INITIAL_JUMP_FORCE;
 		if isIdle:
@@ -70,8 +82,13 @@ func _physics_process(delta):
 	if time_since_break_fall > 0:
 		motion.x = 0;
 		motion.y = 0;
+		time_since_break_fall -= delta;
 	
-	time_since_break_fall -= delta;
+	if is_dashing && time_since_dash > 0:
+		time_since_dash -= delta;
+		motion.y = 0;
+		motion.x = motion.x * 1.005;
+	
 	
 	motion = move_and_slide(motion, UP);
 	$Sprite.play(animation);
