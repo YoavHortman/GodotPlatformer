@@ -1,7 +1,7 @@
 [gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://KinematicBody2D.gd" type="Script" id=1]
-[ext_resource path="res://Sprites/Player/Jump0.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Player/Dash0.png" type="Texture" id=2]
 [ext_resource path="res://Sprites/Player/Run0.png" type="Texture" id=3]
 [ext_resource path="res://Sprites/Player/Run1.png" type="Texture" id=4]
 [ext_resource path="res://Sprites/Player/Run2.png" type="Texture" id=5]
@@ -11,8 +11,8 @@
 [ext_resource path="res://Sprites/Player/Jump1.png" type="Texture" id=9]
 [ext_resource path="res://Sprites/Player/Jump3.png" type="Texture" id=10]
 [ext_resource path="res://Sprites/Player/Jump4.png" type="Texture" id=11]
-[ext_resource path="res://Sprites/Player/Idle0.png" type="Texture" id=12]
-[ext_resource path="res://Sprites/Player/Dash0.png" type="Texture" id=13]
+[ext_resource path="res://Sprites/Player/Jump0.png" type="Texture" id=12]
+[ext_resource path="res://Sprites/Player/Idle0.png" type="Texture" id=13]
 [ext_resource path="res://Camera2D.gd" type="Script" id=14]
 [ext_resource path="res://JungleDirtTileSet.tres" type="TileSet" id=15]
 
@@ -20,8 +20,8 @@
 animations = [ {
 "frames": [ ExtResource( 2 ) ],
 "loop": true,
-"name": "Jump",
-"speed": 10.0
+"name": "Dash",
+"speed": 5.0
 }, {
 "frames": [ ExtResource( 3 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ), ExtResource( 7 ), ExtResource( 8 ) ],
 "loop": true,
@@ -35,12 +35,12 @@ animations = [ {
 }, {
 "frames": [ ExtResource( 12 ) ],
 "loop": true,
-"name": "Idle",
-"speed": 5.0
+"name": "Jump",
+"speed": 10.0
 }, {
 "frames": [ ExtResource( 13 ) ],
 "loop": true,
-"name": "Dash",
+"name": "Idle",
 "speed": 5.0
 } ]
 
