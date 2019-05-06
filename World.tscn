@@ -56,7 +56,7 @@ script = ExtResource( 1 )
 [node name="Sprite" type="AnimatedSprite" parent="Player"]
 scale = Vector2( 0.5, 0.5 )
 frames = SubResource( 1 )
-animation = "Dash"
+animation = "Idle"
 
 [node name="Body" type="CollisionShape2D" parent="Player"]
 position = Vector2( 0, 2 )
@@ -70,7 +70,7 @@ enabled = true
 cast_to = Vector2( 8, 0 )
 
 [node name="RayCastRightEdgeGrab2" type="RayCast2D" parent="Player"]
-position = Vector2( 0.25, -15 )
+position = Vector2( 0.25, -17 )
 scale = Vector2( 1, 0.1 )
 enabled = true
 cast_to = Vector2( 8, 0 )
@@ -82,7 +82,7 @@ enabled = true
 cast_to = Vector2( -8, 0 )
 
 [node name="RayCastLeftEdgeGrab2" type="RayCast2D" parent="Player"]
-position = Vector2( 0.25, -15 )
+position = Vector2( 0.25, -17 )
 scale = Vector2( 1, 0.1 )
 enabled = true
 cast_to = Vector2( -8, 0 )
