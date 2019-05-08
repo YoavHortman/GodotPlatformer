@@ -1,5 +1,4 @@
 extends Camera2D
- 
 var _duration = 0.0
 var _period_in_ms = 0.0
 var _amplitude = 0.0
@@ -8,18 +7,14 @@ var _last_shook_timer = 0
 var _previous_x = 0.0
 var _previous_y = 0.0
 var _last_offset = Vector2(0, 0)
- 
- 
+
 func _ready():
     set_process(true)
- 
- 
+
 # Shake with decreasing intensity while there's time remaining.
 func _process(delta):
     # Only shake when there's shake time remaining.
     if _timer == 0:
-        set_offset(Vector2())
-        set_process(false)
         return
     # Only shake on certain frames.
     _last_shook_timer = _last_shook_timer + delta
@@ -44,14 +39,9 @@ func _process(delta):
     if _timer <= 0:
         _timer = 0
         set_offset(get_offset() - _last_offset)
- 
- 
+
 # Kick off a new screenshake effect.
 func shake(duration, frequency, amplitude):
-    # Don't interrupt current shake duration
-    if(_timer != 0):
-        return
-   
     # Initialize variables.
     _duration = duration
     _timer = duration
@@ -62,4 +52,46 @@ func shake(duration, frequency, amplitude):
     # Reset previous offset, if any.
     set_offset(get_offset() - _last_offset)
     _last_offset = Vector2(0, 0)
-    set_process(true)
+	
+const MAX_ZOOM_OUT = 2;
+const MAX_ZOOM_IN = 0.7;
+const MAX_ZOOM_OUT_VELOCITY = 1200;
+const ZOOM_HISTORY_LENGTH = 100;
+
+var zoom_history = [];
+var current_zoom = Vector2();
+func set_zoom_from_motion(motion):
+	var angular_velocity = sqrt(pow(motion.x, 2) + pow(motion.y, 2));
+	var velocity = min(MAX_ZOOM_OUT_VELOCITY, angular_velocity);
+	var delta_zoom = MAX_ZOOM_OUT - MAX_ZOOM_IN;
+	var point_in_history = (velocity / MAX_ZOOM_OUT_VELOCITY) * delta_zoom + MAX_ZOOM_IN;
+	
+	if len(zoom_history) > ZOOM_HISTORY_LENGTH:
+		zoom_history.pop_back()
+	zoom_history.push_front(point_in_history);
+	
+	var sum = 0;
+	for item in zoom_history:
+		sum += item;
+	var avrege = sum / len(zoom_history);
+	var target_zoom = Vector2();
+	target_zoom.x = avrege;
+	target_zoom.y = avrege;
+	
+	
+	current_zoom = lerp(current_zoom, target_zoom, 0.05);
+	
+	set_zoom(current_zoom);
+
+const MAX_OFFSET = 500;
+const MAX_OFFSET_VELOCITY = 1200;
+
+var current_offset = Vector2();
+func _offset(motion):
+	var target = Vector2();
+	target.x = (motion.x / MAX_OFFSET_VELOCITY) * MAX_OFFSET;
+	target.y = (motion.y / MAX_OFFSET_VELOCITY) * MAX_OFFSET;
+	
+	current_offset = lerp(current_offset, target, 0.01);
+	set_offset(current_offset);
+	

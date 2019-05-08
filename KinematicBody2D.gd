@@ -18,6 +18,8 @@ const SAFE_LANDING_AFTER_ROLL_TIME_WINDOW = 0.5;
 
 # TODO -- Fix edge hold issue
 # Give edge hold stop frame and extra jump strengh
+# maybe change wall hang to every wall
+# make it clear when it is possible to dash
 # think about double jump
 # PRETTIFY!!!!
 
@@ -82,8 +84,8 @@ func _physics_process(delta):
 		air_time = 0;
 		if lastFrameFallSpeed > MAX_FALL_SPEED / 3 && time_since_roll_click > SAFE_LANDING_AFTER_ROLL_TIME_WINDOW:
 			shake_precentage = lastFrameFallSpeed / MAX_FALL_SPEED;
-			$Camera2D.shake(0.7 * shake_precentage, 300 * shake_precentage, 8 * shake_precentage);
 			time_since_break_fall = shake_precentage * IMMOBILTIY_AFTER_FALL_DURATION;
+			$Camera2D.shake(time_since_break_fall, 300 * shake_precentage, 10 * shake_precentage);
 		if isIdle:
 			motion.x = lerp(motion.x, 0, 0.05);
 	else:
@@ -122,10 +124,15 @@ func _physics_process(delta):
 		motion.x = 0;
 		motion.y = 0;
 		time_since_break_fall -= delta;
-		
+		animation = "Dash";
 	
+	$Camera2D._offset(motion);
+	$Camera2D.set_zoom_from_motion(motion);
+	
+		
 	lastFrameFallSpeed = motion.y;
 	motion = move_and_slide(motion, UP);
+	
 	$Sprite.play(animation);
 
 func _ready():
