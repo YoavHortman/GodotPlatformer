@@ -87,11 +87,11 @@ const MAX_OFFSET = 500;
 const MAX_OFFSET_VELOCITY = 1200;
 
 var current_offset = Vector2();
-func _offset(motion):
+func offset_for_motion(motion):
 	var target = Vector2();
 	target.x = (motion.x / MAX_OFFSET_VELOCITY) * MAX_OFFSET;
 	target.y = (motion.y / MAX_OFFSET_VELOCITY) * MAX_OFFSET;
 	
-	current_offset = lerp(current_offset, target, 0.01);
+	current_offset = lerp(current_offset, target, 0.02);
 	set_offset(current_offset);
 	
