@@ -7,7 +7,6 @@ const ACCELERATION = 20;
 const BACKWARDS_ACCELERATION = 40;
 const AIR_ACCELERATION = 10;
 const INITIAL_JUMP_FORCE = -300;
-const ADDED_JUMP_FORCE = -40;
 const MAX_SPEED = 800;
 const WALL_SLIDE_FRICTION = 0.6;
 const WALL_JUMP_FORCE = 200;
@@ -89,6 +88,7 @@ func _physics_process(delta):
 				shake_precentage = lastFrameFallSpeed / MAX_FALL_SPEED;
 				time_since_break_fall = -(shake_precentage * IMMOBILTIY_AFTER_FALL_DURATION);
 				$Camera2D.shake(abs(time_since_break_fall), 300 * shake_precentage, 10 * shake_precentage);
+				Input.start_joy_vibration(0, 1 * shake_precentage, 1 * shake_precentage, abs(time_since_break_fall))
 		if isIdle:
 			motion.x = lerp(motion.x, 0, 0.08);
 	else:
@@ -100,17 +100,18 @@ func _physics_process(delta):
 	if jump_just_pressed && air_time <= 0.15 && motion.y >= 0:
 		time_since_jump = 0;
 		motion.y = INITIAL_JUMP_FORCE;
-	if jump_pressed && time_since_jump <= 0.2 && motion.y < 0:
+	if jump_pressed && time_since_jump >= 0.1 && time_since_jump <= 0.3 && motion.y < 0:
 		motion.y -= GRAVITY;
-	$Body.rotation = 0;
 	if dash && time_since_dash > air_time:
 		time_since_dash = -0.3;
-	if time_since_dash < -0.1 && time_since_dash >= -0.3:
+	if time_since_dash < -0.2 && time_since_dash >= -0.3:
 		motion.x = 0;
 		motion.y = 0;
-	if time_since_dash >= -0.1 && time_since_dash <= 0:
+		Input.start_joy_vibration(0, 0.4 + time_since_dash, 0.4 + time_since_dash, delta)
+	if time_since_dash >= -0.2 && time_since_dash <= 0:
 		animation = "Dash";
 		motion.y = 0;
+		$Camera2D.offset_for_dash(!$Sprite.flip_h);
 		if !$Sprite.flip_h:
 			motion.x = lerp(motion.x, MAX_SPEED, 0.2);
 		else:
@@ -127,16 +128,16 @@ func _physics_process(delta):
 	
 	if time_since_roll_click < SAFE_LANDING_AFTER_ROLL_TIME_WINDOW:
 		$Sprite.flip_v = true;
-		
+	
+	# TODO maybe have a staate???
 	if time_since_break_fall < 0:
 		motion.x = 0;
 		motion.y = 0;
 		time_since_break_fall += delta;
 		animation = "Dash";
 	
-	$Camera2D.offset_for_motion(motion);
 	$Camera2D.set_zoom_from_motion(motion);
-	
+	$Camera2D.offset_for_motion(motion);
 		
 	lastFrameFallSpeed = motion.y;
 	motion = move_and_slide(motion, UP);

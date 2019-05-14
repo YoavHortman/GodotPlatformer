@@ -83,15 +83,21 @@ func set_zoom_from_motion(motion):
 	
 	set_zoom(current_zoom);
 
-const MAX_OFFSET = 500;
-const MAX_OFFSET_VELOCITY = 1200;
+const MAX_OFFSET = 400;
+const MAX_OFFSET_VELOCITY = 900;
 
 var current_offset = Vector2();
 func offset_for_motion(motion):
 	var target = Vector2();
 	target.x = (motion.x / MAX_OFFSET_VELOCITY) * MAX_OFFSET;
 	target.y = (motion.y / MAX_OFFSET_VELOCITY) * MAX_OFFSET;
-	
 	current_offset = lerp(current_offset, target, 0.02);
+	set_offset(current_offset);
+	
+func offset_for_dash(right):
+	if right:
+		current_offset.x = lerp(current_offset.x, MAX_OFFSET, 0.02);
+	else:
+		current_offset.x = lerp(current_offset.x, -MAX_OFFSET, 0.02);
 	set_offset(current_offset);
 	
