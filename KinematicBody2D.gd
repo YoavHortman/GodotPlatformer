@@ -33,12 +33,9 @@ var shake_precentage = 1;
 func _physics_process(delta):
 	var right = Input.is_action_pressed("ui_right");
 	var left =  Input.is_action_pressed("ui_left");
-	var jump_just_pressed = Input.is_action_just_pressed("ui_jump");
-	var jump_pressed = Input.is_action_pressed("ui_jump");
 	var down = Input.is_action_pressed("ui_down");
 	var dash = Input.is_action_just_pressed("ui_dash");
 	var roll = Input.is_action_just_pressed("ui_roll");
-	var hold = Input.is_action_pressed("ui_hold");
 	
 	var animation = "Idle";
 	var isIdle = false;
@@ -66,21 +63,6 @@ func _physics_process(delta):
 			$Sprite.flip_h = true;
 		else:
 			isIdle = true
-
-	if (hold && $RayCastRightEdgeGrab.is_colliding() && !$RayCastRightEdgeGrab2.is_colliding()):
-		motion.y = 0;
-		wall_collision(-EDGE_HOLD_JUMP_FORCE, jump_just_pressed);
-	elif (hold && $RayCastLeftEdgeGrab.is_colliding() && !$RayCastLeftEdgeGrab2.is_colliding()):
-		motion.y = 0;
-		wall_collision(EDGE_HOLD_JUMP_FORCE, jump_just_pressed);
-	else: 	
-		if is_on_wall() && motion.x > 0:
-			air_time = 0;
-			wall_collision(-WALL_JUMP_FORCE, jump_just_pressed && !is_on_floor())
-		elif is_on_wall() && motion.x < 0:
-			air_time = 0;
-			wall_collision(WALL_JUMP_FORCE, jump_just_pressed && !is_on_floor());
-	
 	if is_on_floor():
 		air_time = 0;
 		if lastFrameFallSpeed > MAX_FALL_SPEED / 3:
@@ -97,12 +79,15 @@ func _physics_process(delta):
 			animation = "Jump";
 		else:
 			animation = "Fall";
-	if jump_just_pressed && air_time <= 0.15 && motion.y >= 0:
-		time_since_jump = 0;
-		motion.y = INITIAL_JUMP_FORCE;
-	if jump_pressed && time_since_jump >= 0.1 && time_since_jump <= 0.3 && motion.y < 0:
-		motion.y -= GRAVITY;
-	if dash && time_since_dash > air_time:
+	
+	if is_wall_sliding():
+		wall_collision();
+	if is_edge_holding_right() || is_edge_holding_left():
+		motion.y = 0;
+		wall_collision();
+	jump();
+	
+	if dash && time_since_dash > air_time && air_time > 0:
 		time_since_dash = -0.3;
 	if time_since_dash < -0.2 && time_since_dash >= -0.3:
 		motion.x = 0;
@@ -116,10 +101,6 @@ func _physics_process(delta):
 			motion.x = lerp(motion.x, MAX_SPEED, 0.2);
 		else:
 			motion.x = lerp(motion.x, -MAX_SPEED, 0.2);
-	time_since_dash += delta;	
-	time_since_roll_click += delta;
-	time_since_jump += delta;
-
 	$Sprite.flip_v = false;
 	
 	# Ignore 2nd roll in air
@@ -141,17 +122,54 @@ func _physics_process(delta):
 		
 	lastFrameFallSpeed = motion.y;
 	motion = move_and_slide(motion, UP);
-	
+	time_since_dash += delta;	
+	time_since_roll_click += delta;
+	time_since_jump += delta;
 	$Sprite.play(animation);
 
 func _ready():
 	print("ready");
 
-func wall_collision(opposite_force, jump):
+func wall_collision():
+	air_time = 0;
 	if motion.y > 0:
 		motion.y = min(motion.y - GRAVITY * WALL_SLIDE_FRICTION, MAX_WALL_SLIDE_SPEED);
-		$Sprite.flip_h = opposite_force < 0;
-	if jump:
-		time_since_jump = 0;
-		motion.y = INITIAL_JUMP_FORCE;
-		motion.x = opposite_force;
+
+func jump():
+	var jump_just_pressed = Input.is_action_just_pressed("ui_jump");
+	var jump_pressed = Input.is_action_pressed("ui_jump");
+	if jump_just_pressed:
+		if is_edge_holding_right():
+			time_since_jump = 0;
+			motion.x = -EDGE_HOLD_JUMP_FORCE;
+			motion.y = INITIAL_JUMP_FORCE;
+		elif is_edge_holding_left():
+			time_since_jump = 0;
+			motion.x = EDGE_HOLD_JUMP_FORCE;
+			motion.y = INITIAL_JUMP_FORCE;
+		elif is_wall_sliding():
+			if motion.x > 0:
+				motion.x = -WALL_JUMP_FORCE;
+			elif motion.x < 0:
+				motion.x = WALL_JUMP_FORCE;
+			time_since_jump = 0;
+			motion.y = INITIAL_JUMP_FORCE;
+		elif air_time <= 0.15 && motion.y >= 0:
+			time_since_jump = 0;
+			motion.y = INITIAL_JUMP_FORCE;
+	
+	if jump_pressed && time_since_jump >= 0.1 && time_since_jump <= 0.3 && motion.y < 0:
+		motion.y -= GRAVITY;
+			
+func is_edge_holding_right():
+	var hold = Input.is_action_pressed("ui_hold");
+	return hold && $RayCastRightEdgeGrab.is_colliding() && !$RayCastRightEdgeGrab2.is_colliding();
+
+func is_edge_holding_left():
+	var hold = Input.is_action_pressed("ui_hold");
+	return hold && $RayCastLeftEdgeGrab.is_colliding() && !$RayCastLeftEdgeGrab2.is_colliding();
+			
+func is_wall_sliding():
+	return is_on_wall() && !is_on_floor();
+			
+			
