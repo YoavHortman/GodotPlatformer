@@ -4,15 +4,15 @@
 [ext_resource path="res://Sprites/Player/Jump1.png" type="Texture" id=2]
 [ext_resource path="res://Sprites/Player/Jump3.png" type="Texture" id=3]
 [ext_resource path="res://Sprites/Player/Jump4.png" type="Texture" id=4]
-[ext_resource path="res://Sprites/Player/Jump0.png" type="Texture" id=5]
-[ext_resource path="res://Sprites/Player/Idle0.png" type="Texture" id=6]
-[ext_resource path="res://Sprites/Player/Dash0.png" type="Texture" id=7]
-[ext_resource path="res://Sprites/Player/Run0.png" type="Texture" id=8]
-[ext_resource path="res://Sprites/Player/Run1.png" type="Texture" id=9]
-[ext_resource path="res://Sprites/Player/Run2.png" type="Texture" id=10]
-[ext_resource path="res://Sprites/Player/Run3.png" type="Texture" id=11]
-[ext_resource path="res://Sprites/Player/Run4.png" type="Texture" id=12]
-[ext_resource path="res://Sprites/Player/Run7.png" type="Texture" id=13]
+[ext_resource path="res://Sprites/Player/Run0.png" type="Texture" id=5]
+[ext_resource path="res://Sprites/Player/Run1.png" type="Texture" id=6]
+[ext_resource path="res://Sprites/Player/Run2.png" type="Texture" id=7]
+[ext_resource path="res://Sprites/Player/Run3.png" type="Texture" id=8]
+[ext_resource path="res://Sprites/Player/Run4.png" type="Texture" id=9]
+[ext_resource path="res://Sprites/Player/Run7.png" type="Texture" id=10]
+[ext_resource path="res://Sprites/Player/Dash0.png" type="Texture" id=11]
+[ext_resource path="res://Sprites/Player/Idle0.png" type="Texture" id=12]
+[ext_resource path="res://Sprites/Player/Jump0.png" type="Texture" id=13]
 [ext_resource path="res://Camera2D.gd" type="Script" id=14]
 [ext_resource path="res://JungleDirtTileSet.tres" type="TileSet" id=15]
 
@@ -23,24 +23,24 @@ animations = [ {
 "name": "Fall",
 "speed": 10.0
 }, {
-"frames": [ ExtResource( 5 ) ],
+"frames": [ ExtResource( 5 ), ExtResource( 6 ), ExtResource( 7 ), ExtResource( 8 ), ExtResource( 9 ), ExtResource( 10 ) ],
 "loop": true,
-"name": "Jump",
+"name": "Run",
 "speed": 10.0
 }, {
-"frames": [ ExtResource( 6 ) ],
-"loop": true,
-"name": "Idle",
-"speed": 5.0
-}, {
-"frames": [ ExtResource( 7 ) ],
+"frames": [ ExtResource( 11 ) ],
 "loop": true,
 "name": "Dash",
 "speed": 5.0
 }, {
-"frames": [ ExtResource( 8 ), ExtResource( 9 ), ExtResource( 10 ), ExtResource( 11 ), ExtResource( 12 ), ExtResource( 13 ) ],
+"frames": [ ExtResource( 12 ) ],
 "loop": true,
-"name": "Run",
+"name": "Idle",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 13 ) ],
+"loop": true,
+"name": "Jump",
 "speed": 10.0
 } ]
 
@@ -92,8 +92,6 @@ current = true
 zoom = Vector2( 1.2, 1.2 )
 drag_margin_h_enabled = false
 drag_margin_v_enabled = false
-smoothing_enabled = true
-smoothing_speed = 8.0
 drag_margin_top = 0.7
 drag_margin_bottom = 0.1
 editor_draw_drag_margin = true
