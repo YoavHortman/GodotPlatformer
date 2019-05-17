@@ -63,14 +63,19 @@ func _physics_process(delta):
 			$Sprite.flip_h = true;
 		else:
 			isIdle = true
+			
 	if is_on_floor():
 		air_time = 0;
-		if lastFrameFallSpeed > MAX_FALL_SPEED / 3:
+		if lastFrameFallSpeed > MAX_FALL_SPEED / 2:
 			if time_since_roll_click > SAFE_LANDING_AFTER_ROLL_TIME_WINDOW:
 				shake_precentage = lastFrameFallSpeed / MAX_FALL_SPEED;
 				time_since_break_fall = -(shake_precentage * IMMOBILTIY_AFTER_FALL_DURATION);
 				$Camera2D.shake(abs(time_since_break_fall), 300 * shake_precentage, 10 * shake_precentage);
 				Input.start_joy_vibration(0, 1 * shake_precentage, 1 * shake_precentage, abs(time_since_break_fall))
+				$Particles2D.set_amount(20 * shake_precentage);
+				$Particles2D.set_lifetime(abs(time_since_break_fall));
+				$Particles2D.set_emitting(true);
+
 		if isIdle:
 			motion.x = lerp(motion.x, 0, 0.08);
 	else:
@@ -121,6 +126,13 @@ func _physics_process(delta):
 	$Camera2D.offset_for_motion(motion);
 		
 	lastFrameFallSpeed = motion.y;
+	# TODO trying and failing to get current tile
+	#var tilemap = get_parent().get_node("NormalTile")
+	#var map_pos = tilemap.world_to_map(get_global_position())
+	#var id = tilemap.get_cellv(map_pos)
+	#if id > -1:
+	#	print(tilemap.get_tileset().tile_get_name(id));
+	
 	motion = move_and_slide(motion, UP);
 	time_since_dash += delta;	
 	time_since_roll_click += delta;
