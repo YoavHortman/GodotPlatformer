@@ -36,14 +36,15 @@ animations = [ {
 }, {
 "frames": [ ExtResource( 12 ) ],
 "loop": true,
-"name": "Jump",
+"name": "Run",
 "speed": 10.0
 }, {
+
 "frames": [ ExtResource( 13 ) ],
 "loop": true,
-"name": "Idle",
+"name": "Dash",
 "speed": 5.0
-} ]
+}, {} ]
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 13, 28 )

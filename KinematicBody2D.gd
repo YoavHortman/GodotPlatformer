@@ -97,7 +97,7 @@ func _physics_process(delta):
 	if time_since_dash < -0.2 && time_since_dash >= -0.3:
 		motion.x = 0;
 		motion.y = 0;
-		Input.start_joy_vibration(0, 0.4 + time_since_dash, 0.4 + time_since_dash, delta)
+		Input.start_joy_vibration(0, 0.7 + time_since_dash, 0.7 + time_since_dash, time_since_dash * 10)
 	if time_since_dash >= -0.2 && time_since_dash <= 0:
 		animation = "Dash";
 		motion.y = 0;
