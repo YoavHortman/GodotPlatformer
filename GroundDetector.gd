@@ -13,7 +13,6 @@ func _physics_process(delta):
 		 #max(MIN_TIME_SCALE, (1 - motion.y / MAX_TIME_SCALE_VELOCITY));
 	#else:
 	#	Engine.time_scale = lerp(Engine.time_scale, 1, 0.2);
-	print(get_collision_point());
 	if motion.y > threshold / 2:
 		var shake_precentage = motion.y / 900;
 		get_parent().get_node("Camera2D").shake(delta, 30 * shake_precentage, 5 * shake_precentage);

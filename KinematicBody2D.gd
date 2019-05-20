@@ -31,6 +31,7 @@ var motion = Vector2();
 var lastFrameFallSpeed = 0;
 var shake_precentage = 1;
 var current_friction = 0.08;
+var tilemap: TileMap;
 func _physics_process(delta):
 	var right = Input.is_action_pressed("ui_right");
 	var left =  Input.is_action_pressed("ui_left");
@@ -122,6 +123,19 @@ func _physics_process(delta):
 		motion.y = 0;
 		time_since_break_fall += delta;
 		animation = "Dash";
+
+
+	for i in get_slide_count():
+		var collision = get_slide_collision(i)
+		var cell_pos = tilemap.world_to_map(collision.get_position())
+		var tile_id = tilemap.get_cellv(cell_pos)
+		var tile_name = tilemap.tile_set.tile_get_name(tile_id)
+		if tile_name == "0": 
+			if lastFrameFallSpeed > MAX_FALL_SPEED / 4 && is_on_floor():
+				motion.y = lerp(-lastFrameFallSpeed, 0, 0.2);
+		else: 
+			current_friction = 0.08;
+	
 	
 	$Camera2D.set_zoom_from_motion(motion);
 	$Camera2D.offset_for_motion(motion);
@@ -135,12 +149,16 @@ func _physics_process(delta):
 	$Sprite.play(animation);
 
 func _ready():
-	print("ready");
+	 tilemap = get_parent().get_node("NormalTile");
 
 func wall_collision():
 	air_time = 0;
 	if motion.y > 0:
 		motion.y = min(motion.y - GRAVITY * WALL_SLIDE_FRICTION, MAX_WALL_SLIDE_SPEED);
+
+func _process(delta):
+	OS.set_window_title("FirstGame | fps: " + str(Engine.get_frames_per_second()))
+
 
 func jump():
 	var jump_just_pressed = Input.is_action_just_pressed("ui_jump");
@@ -161,22 +179,10 @@ func jump():
 				motion.x = WALL_JUMP_FORCE;
 			time_since_jump = 0;
 			motion.y = INITIAL_JUMP_FORCE;
-		elif air_time <= 0.15 && motion.y >= 0:
+		elif air_time <= 0.10 && motion.y >= 0:
 			time_since_jump = 0;
 			motion.y = INITIAL_JUMP_FORCE;
-
-	var _tilemap : TileMap = get_parent().get_node("NormalTile");
-	for i in get_slide_count():
-		var collision = get_slide_collision(i)
-		var cell_pos = _tilemap.world_to_map(collision.get_position())
-		var tile_id = _tilemap.get_cellv(cell_pos)
-		var tile_name = _tilemap.tile_set.tile_get_name(tile_id)
-		print(tile_name);
-		if tile_name == "0": 
-			print("hello");
-		else: 
-			current_friction = 0.08;
-	
+			
 	if jump_pressed && time_since_jump >= 0.1 && time_since_jump <= 0.3 && motion.y < 0:
 		motion.y -= GRAVITY;
 			
