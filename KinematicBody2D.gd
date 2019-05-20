@@ -159,29 +159,30 @@ func wall_collision():
 func _process(delta):
 	OS.set_window_title("FirstGame | fps: " + str(Engine.get_frames_per_second()))
 
-
+var jump_vector = Vector2();
 func jump():
 	var jump_just_pressed = Input.is_action_just_pressed("ui_jump");
 	var jump_pressed = Input.is_action_pressed("ui_jump");
-	if jump_just_pressed:
-		if is_edge_holding_right():
-			time_since_jump = 0;
-			motion.x = -EDGE_HOLD_JUMP_FORCE;
-			motion.y = INITIAL_JUMP_FORCE;
-		elif is_edge_holding_left():
-			time_since_jump = 0;
-			motion.x = EDGE_HOLD_JUMP_FORCE;
-			motion.y = INITIAL_JUMP_FORCE;
-		elif is_wall_sliding():
-			if motion.x > 0:
-				motion.x = -WALL_JUMP_FORCE;
-			elif motion.x < 0:
-				motion.x = WALL_JUMP_FORCE;
-			time_since_jump = 0;
-			motion.y = INITIAL_JUMP_FORCE;
-		elif air_time <= 0.10 && motion.y >= 0:
-			time_since_jump = 0;
-			motion.y = INITIAL_JUMP_FORCE;
+	if is_edge_holding_right():
+		jump_vector.x = -EDGE_HOLD_JUMP_FORCE;
+		jump_vector.y = INITIAL_JUMP_FORCE;
+	elif is_edge_holding_left():
+		jump_vector.x = EDGE_HOLD_JUMP_FORCE;
+		jump_vector.y = INITIAL_JUMP_FORCE;
+	elif is_wall_sliding():
+		if motion.x > 0:
+			jump_vector.x = -WALL_JUMP_FORCE;
+		elif motion.x < 0:
+			jump_vector.x = WALL_JUMP_FORCE;
+		jump_vector.y = INITIAL_JUMP_FORCE;
+	elif is_on_floor():
+		jump_vector.y = INITIAL_JUMP_FORCE;
+		jump_vector.x = motion.x;
+			
+	
+	if jump_just_pressed && air_time <= 0.15 && motion.y >= 0:
+		time_since_jump = 0;
+		motion = jump_vector;
 			
 	if jump_pressed && time_since_jump >= 0.1 && time_since_jump <= 0.3 && motion.y < 0:
 		motion.y -= GRAVITY;
