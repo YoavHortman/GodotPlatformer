@@ -30,6 +30,7 @@ var air_time = 0.0;
 var motion = Vector2();
 var lastFrameFallSpeed = 0;
 var shake_precentage = 1;
+var current_friction = 0.08;
 func _physics_process(delta):
 	var right = Input.is_action_pressed("ui_right");
 	var left =  Input.is_action_pressed("ui_left");
@@ -77,7 +78,7 @@ func _physics_process(delta):
 				$Particles2D.set_emitting(true);
 
 		if isIdle:
-			motion.x = lerp(motion.x, 0, 0.08);
+			motion.x = lerp(motion.x, 0, current_friction);
 	else:
 		air_time += delta;
 		if motion.y < 0:
@@ -126,12 +127,6 @@ func _physics_process(delta):
 	$Camera2D.offset_for_motion(motion);
 		
 	lastFrameFallSpeed = motion.y;
-	# TODO trying and failing to get current tile
-	#var tilemap = get_parent().get_node("NormalTile")
-	#var map_pos = tilemap.world_to_map(get_global_position())
-	#var id = tilemap.get_cellv(map_pos)
-	#if id > -1:
-	#	print(tilemap.get_tileset().tile_get_name(id));
 	
 	motion = move_and_slide(motion, UP);
 	time_since_dash += delta;	
@@ -169,6 +164,18 @@ func jump():
 		elif air_time <= 0.15 && motion.y >= 0:
 			time_since_jump = 0;
 			motion.y = INITIAL_JUMP_FORCE;
+
+	var _tilemap : TileMap = get_parent().get_node("NormalTile");
+	for i in get_slide_count():
+		var collision = get_slide_collision(i)
+		var cell_pos = _tilemap.world_to_map(collision.get_position())
+		var tile_id = _tilemap.get_cellv(cell_pos)
+		var tile_name = _tilemap.tile_set.tile_get_name(tile_id)
+		print(tile_name);
+		if tile_name == "0": 
+			print("hello");
+		else: 
+			current_friction = 0.08;
 	
 	if jump_pressed && time_since_jump >= 0.1 && time_since_jump <= 0.3 && motion.y < 0:
 		motion.y -= GRAVITY;
