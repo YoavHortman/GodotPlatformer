@@ -28,7 +28,7 @@ var time_since_dash = 1.0;
 var time_since_jump = 1.0;
 var air_time = 0.0;
 var motion = Vector2();
-var lastFrameFallSpeed = 0;
+var lastFrameMotion = Vector2();
 var shake_precentage = 1;
 var current_friction = 0.08;
 var tilemap: TileMap;
@@ -68,9 +68,9 @@ func _physics_process(delta):
 			
 	if is_on_floor():
 		air_time = 0;
-		if lastFrameFallSpeed > MAX_FALL_SPEED / 2:
+		if lastFrameMotion.y > MAX_FALL_SPEED / 2:
 			if time_since_roll_click > SAFE_LANDING_AFTER_ROLL_TIME_WINDOW:
-				shake_precentage = lastFrameFallSpeed / MAX_FALL_SPEED;
+				shake_precentage = lastFrameMotion.y / MAX_FALL_SPEED;
 				time_since_break_fall = -(shake_precentage * IMMOBILTIY_AFTER_FALL_DURATION);
 				$Camera2D.shake(abs(time_since_break_fall), 300 * shake_precentage, 10 * shake_precentage);
 				Input.start_joy_vibration(0, 1 * shake_precentage, 1 * shake_precentage, abs(time_since_break_fall))
@@ -92,8 +92,7 @@ func _physics_process(delta):
 	if is_edge_holding_right() || is_edge_holding_left():
 		motion.y = 0;
 		wall_collision();
-	jump();
-	
+	jump()
 	if dash && time_since_dash > air_time && air_time > 0:
 		time_since_dash = -0.3;
 	if time_since_dash < -0.2 && time_since_dash >= -0.3:
@@ -131,8 +130,8 @@ func _physics_process(delta):
 		var tile_id = tilemap.get_cellv(cell_pos)
 		var tile_name = tilemap.tile_set.tile_get_name(tile_id)
 		if tile_name == "0": 
-			if lastFrameFallSpeed > MAX_FALL_SPEED / 4 && is_on_floor():
-				motion.y = lerp(-lastFrameFallSpeed, 0, 0.2);
+			if lastFrameMotion.y > MAX_FALL_SPEED / 4 && is_on_floor():
+				motion.y = lerp(-lastFrameMotion.y, 0, 0.2);
 		else: 
 			current_friction = 0.08;
 	
@@ -140,7 +139,7 @@ func _physics_process(delta):
 	$Camera2D.set_zoom_from_motion(motion);
 	$Camera2D.offset_for_motion(motion);
 		
-	lastFrameFallSpeed = motion.y;
+	lastFrameMotion = motion;
 	
 	motion = move_and_slide(motion, UP);
 	time_since_dash += delta;	
@@ -170,9 +169,9 @@ func jump():
 		jump_vector.x = EDGE_HOLD_JUMP_FORCE;
 		jump_vector.y = INITIAL_JUMP_FORCE;
 	elif is_wall_sliding():
-		if motion.x > 0:
+		if lastFrameMotion.x > 0:
 			jump_vector.x = -WALL_JUMP_FORCE;
-		elif motion.x < 0:
+		elif lastFrameMotion.x < 0:
 			jump_vector.x = WALL_JUMP_FORCE;
 		jump_vector.y = INITIAL_JUMP_FORCE;
 	elif is_on_floor():
