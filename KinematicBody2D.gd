@@ -3,6 +3,7 @@ extends KinematicBody2D
 const UP = Vector2(0, -1);
 const GRAVITY = 15;
 const MAX_FALL_SPEED = 1200;
+const DANGER_FALL_SPEED = 600;
 const ACCELERATION = 20;
 const BACKWARDS_ACCELERATION = 40;
 const AIR_ACCELERATION = 10;
@@ -46,7 +47,9 @@ func _physics_process(delta):
 		if right:
 			if is_on_floor():
 				if motion.x < -ACCELERATION: 
-					motion.x = min(motion.x + BACKWARDS_ACCELERATION, MAX_SPEED);	
+					motion.x = min(motion.x + BACKWARDS_ACCELERATION, MAX_SPEED);
+					#$Particles2D.set_explosiveness(0);
+					
 				else:
 					motion.x = min(motion.x + ACCELERATION, MAX_SPEED);	
 					animation = "Run";
@@ -68,7 +71,7 @@ func _physics_process(delta):
 			
 	if is_on_floor():
 		air_time = 0;
-		if lastFrameMotion.y > MAX_FALL_SPEED / 2:
+		if lastFrameMotion.y > DANGER_FALL_SPEED:
 			if time_since_roll_click > SAFE_LANDING_AFTER_ROLL_TIME_WINDOW:
 				shake_precentage = lastFrameMotion.y / MAX_FALL_SPEED;
 				time_since_break_fall = -(shake_precentage * IMMOBILTIY_AFTER_FALL_DURATION);
@@ -179,7 +182,7 @@ func jump():
 		jump_vector.x = motion.x;
 			
 	
-	if jump_just_pressed && air_time <= 0.15 && motion.y >= 0:
+	if jump_just_pressed && air_time <= 0.15 && (motion.y >= 0 || is_wall_sliding()):
 		time_since_jump = 0;
 		motion = jump_vector;
 			
