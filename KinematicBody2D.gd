@@ -48,8 +48,8 @@ func _physics_process(delta):
 			if is_on_floor():
 				if motion.x < -ACCELERATION: 
 					motion.x = min(motion.x + BACKWARDS_ACCELERATION, MAX_SPEED);
-					#$Particles2D.set_explosiveness(0);
-					
+					$FrictionParticle.emit_for_motion(lastFrameMotion);
+					animation = "Friction";
 				else:
 					motion.x = min(motion.x + ACCELERATION, MAX_SPEED);	
 					animation = "Run";
@@ -60,6 +60,8 @@ func _physics_process(delta):
 			if is_on_floor():
 				if motion.x > ACCELERATION:
 					motion.x = max(motion.x - BACKWARDS_ACCELERATION, -MAX_SPEED);
+					$FrictionParticle.emit_for_motion(lastFrameMotion);
+					animation = "Friction";
 				else:
 					motion.x = max(motion.x - ACCELERATION, -MAX_SPEED);
 					animation = "Run";
