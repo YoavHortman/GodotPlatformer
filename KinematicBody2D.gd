@@ -147,7 +147,9 @@ func _physics_process(delta):
 		var tile_name = tilemap.tile_set.tile_get_name(tile_id)
 		if tile_name == "0": 
 			if lastFrameMotion.y > MAX_FALL_SPEED / 4 && is_on_floor():
-				motion.y = lerp(-lastFrameMotion.y, 0, 0.2);
+				print("todo");
+				#motion.y = lerp(-lastFrameMotion.y, 0, 0.2);
+				#motion.x = lerp(-lastFrameMotion.x, 0, 0.2)
 		else: 
 			current_friction = 0.08;
 	
