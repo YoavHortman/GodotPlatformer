@@ -43,6 +43,8 @@ func _physics_process(delta):
 	var animation = "Idle";
 	var isIdle = false;
 	motion.y = min(motion.y + GRAVITY, MAX_FALL_SPEED);
+	
+	
 	if time_since_dash > 0:
 		if right:
 			if is_on_floor():
@@ -53,9 +55,10 @@ func _physics_process(delta):
 				else:
 					motion.x = min(motion.x + ACCELERATION, MAX_SPEED);	
 					animation = "Run";
+					$Sprite.flip_h = false;
 			else:
 				motion.x = min(motion.x + AIR_ACCELERATION, MAX_SPEED);	
-			$Sprite.flip_h = false;
+				$Sprite.flip_h = false;
 		elif left:
 			if is_on_floor():
 				if motion.x > ACCELERATION:
@@ -63,11 +66,12 @@ func _physics_process(delta):
 					$FrictionParticle.emit_for_motion(lastFrameMotion);
 					animation = "Friction";
 				else:
+					$Sprite.flip_h = true;
 					motion.x = max(motion.x - ACCELERATION, -MAX_SPEED);
 					animation = "Run";
 			else:
+				$Sprite.flip_h = true;
 				motion.x = max(motion.x - AIR_ACCELERATION, -MAX_SPEED);
-			$Sprite.flip_h = true;
 		else:
 			isIdle = true
 			
@@ -79,18 +83,25 @@ func _physics_process(delta):
 				time_since_break_fall = -(shake_precentage * IMMOBILTIY_AFTER_FALL_DURATION);
 				$Camera2D.shake(abs(time_since_break_fall), 300 * shake_precentage, 10 * shake_precentage);
 				Input.start_joy_vibration(0, 1 * shake_precentage, 1 * shake_precentage, abs(time_since_break_fall))
-				$Particles2D.set_amount(20 * shake_precentage);
-				$Particles2D.set_lifetime(abs(time_since_break_fall));
-				$Particles2D.set_emitting(true);
+				$DropParticle.set_amount(15 * shake_precentage);
+				$DropParticle.set_lifetime(abs(time_since_break_fall));
+				$DropParticle.set_emitting(true);
+				$DropParticle.get_process_material().set_param(ParticlesMaterial.PARAM_SCALE, 10 * shake_precentage);
 
 		if isIdle:
-			motion.x = lerp(motion.x, 0, current_friction);
+			if (abs(motion.x) < ACCELERATION):
+				motion.x = 0;
+			else:
+				motion.x = lerp(motion.x, 0, current_friction);
 	else:
 		air_time += delta;
 		if motion.y < 0:
 			animation = "Jump";
 		else:
 			animation = "Fall";
+	
+	if is_on_wall() || !is_on_floor():
+		$FrictionParticle.set_emitting(false);
 	
 	if is_wall_sliding():
 		wall_collision();
