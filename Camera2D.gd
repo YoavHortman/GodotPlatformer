@@ -54,7 +54,7 @@ func shake(duration, frequency, amplitude):
     _last_offset = Vector2(0, 0)
 	
 const MAX_ZOOM_OUT = 2;
-const MAX_ZOOM_IN = 0.7;
+const MAX_ZOOM_IN = 1;
 const MAX_ZOOM_OUT_VELOCITY = 1200;
 const ZOOM_HISTORY_LENGTH = 100;
 

@@ -19,7 +19,7 @@ func _ready():
 						grid[n][m] = 5;
 					else: 
 						grid[n][m] = 1;
-			elif m % 5 == 0:
+			elif m % randi() % 5 == 0:
 				if randi() % 15 == 0:
 					grid[n][m] = -1
 					grid[n][m + 1] = -1

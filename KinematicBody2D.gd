@@ -12,16 +12,10 @@ const MAX_SPEED = 800;
 const WALL_SLIDE_FRICTION = 0.6;
 const WALL_JUMP_FORCE = 200;
 const EDGE_HOLD_JUMP_FORCE = 300;
-const MAX_WALL_SLIDE_SPEED = 500;
+const MAX_WALL_SLIDE_SPEED = 800;
 const IMMOBILTIY_AFTER_FALL_DURATION = 1.6;
 const SAFE_LANDING_AFTER_ROLL_TIME_WINDOW = 0.5;
 
-# TODO -- Fix edge hold issue
-# Give edge hold stop frame and extra jump strengh
-# maybe change wall hang to every wall
-# make it clear when it is possible to dash (one time per jump)
-# think about double jump
-# PRETTIFY!!!!
 
 var time_since_break_fall = 1.0;
 var time_since_roll_click = 1.0;
@@ -53,8 +47,9 @@ func _physics_process(delta):
 					$FrictionParticle.emit_for_motion(lastFrameMotion);
 					animation = "Friction";
 				else:
-					motion.x = min(motion.x + ACCELERATION, MAX_SPEED);	
 					animation = "Run";
+					if motion.x < MAX_SPEED:
+						motion.x = min(motion.x + ACCELERATION, MAX_SPEED);	
 					$Sprite.flip_h = false;
 			else:
 				motion.x = min(motion.x + AIR_ACCELERATION, MAX_SPEED);	
@@ -85,10 +80,11 @@ func _physics_process(delta):
 				Input.start_joy_vibration(0, 1 * shake_precentage, 1 * shake_precentage, abs(time_since_break_fall))
 				$DropParticle.set_amount(15 * shake_precentage);
 				$DropParticle.set_lifetime(abs(time_since_break_fall));
-				$DropParticle.set_emitting(true);
 				$DropParticle.get_process_material().set_param(ParticlesMaterial.PARAM_SCALE, 10 * shake_precentage);
+				$DropParticle.set_emitting(true);
 
 		if isIdle:
+			# Avoid very slow deaccl when velocity is close to 0
 			if (abs(motion.x) < ACCELERATION):
 				motion.x = 0;
 			else:
@@ -109,13 +105,21 @@ func _physics_process(delta):
 		motion.y = 0;
 		wall_collision();
 	jump()
-	if dash && time_since_dash > air_time && air_time > 0:
+	if dash && time_since_dash > air_time && air_time > 0 && time_since_dash > 0.15:
 		time_since_dash = -0.3;
 	if time_since_dash < -0.2 && time_since_dash >= -0.3:
+		$DropParticle.restart();
+		$DropParticle.set_amount(15);
+		$DropParticle.set_lifetime(1);
+		$DropParticle.get_process_material().set_param(ParticlesMaterial.PARAM_SCALE, 10);
+		$DropParticle.set_emitting(true);
 		motion.x = 0;
 		motion.y = 0;
 		Input.start_joy_vibration(0, 0.7 + time_since_dash, 0.7 + time_since_dash, time_since_dash * 10)
 	if time_since_dash >= -0.2 && time_since_dash <= 0:
+		if is_on_wall():
+			time_since_dash = 0;
+			$DropParticle.set_emitting(false);
 		animation = "Dash";
 		motion.y = 0;
 		$Camera2D.offset_for_dash(!$Sprite.flip_h);
@@ -197,7 +201,7 @@ func jump():
 		jump_vector.x = motion.x;
 			
 	
-	if jump_just_pressed && air_time <= 0.15 && (motion.y >= 0 || is_wall_sliding()):
+	if jump_just_pressed && air_time <= 0.15 && (motion.y >= 0 || abs(jump_vector.x) == WALL_JUMP_FORCE ):
 		time_since_jump = 0;
 		motion = jump_vector;
 			
