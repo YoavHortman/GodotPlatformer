@@ -1,5 +1,8 @@
 extends KinematicBody2D
 
+# Add state manager?
+# Add (retractable once?) parachute instead of roll
+
 const UP = Vector2(0, -1);
 const GRAVITY = 15;
 const MAX_FALL_SPEED = 1200;
@@ -96,10 +99,11 @@ func _physics_process(delta):
 		else:
 			animation = "Fall";
 	
-	if is_on_wall() || !is_on_floor():
+	if !is_on_floor() || is_on_wall():
 		$FrictionParticle.set_emitting(false);
 	
 	if is_wall_sliding():
+		animation = "WallSlide"
 		wall_collision();
 	if is_edge_holding_right() || is_edge_holding_left():
 		motion.y = 0;
@@ -130,7 +134,7 @@ func _physics_process(delta):
 	$Sprite.flip_v = false;
 	
 	# Ignore 2nd roll in air
-	if roll && air_time <= time_since_roll_click: 
+	if roll && air_time <= time_since_roll_click:
 		time_since_roll_click = 0.0;
 	
 	if time_since_roll_click < SAFE_LANDING_AFTER_ROLL_TIME_WINDOW:

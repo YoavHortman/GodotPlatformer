@@ -97,8 +97,8 @@ func offset_for_motion(motion):
 	
 func offset_for_dash(right):
 	if right:
-		current_offset.x = lerp(current_offset.x, MAX_OFFSET_X, 0.02);
+		current_offset.x = lerp(current_offset.x, MAX_OFFSET_X, 0.03);
 	else:
-		current_offset.x = lerp(current_offset.x, -MAX_OFFSET_X, 0.02);
+		current_offset.x = lerp(current_offset.x, -MAX_OFFSET_X, 0.03);
 	set_offset(current_offset);
 	
