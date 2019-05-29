@@ -21,7 +21,7 @@ const SAFE_LANDING_AFTER_ROLL_TIME_WINDOW = 0.5;
 
 
 var time_since_break_fall = 1.0;
-var time_since_roll_click = 1.0;
+var time_since_roll_click = false;
 var time_since_dash = 1.0;
 var time_since_jump = 1.0;
 var air_time = 0.0;
@@ -40,7 +40,6 @@ func _physics_process(delta):
 	var animation = "Idle";
 	var isIdle = false;
 	motion.y = min(motion.y + GRAVITY, MAX_FALL_SPEED);
-	
 	
 	if time_since_dash > 0:
 		if right:
@@ -76,7 +75,7 @@ func _physics_process(delta):
 	if is_on_floor():
 		air_time = 0;
 		if lastFrameMotion.y > DANGER_FALL_SPEED:
-			if time_since_roll_click > SAFE_LANDING_AFTER_ROLL_TIME_WINDOW:
+			if !time_since_roll_click:
 				shake_precentage = lastFrameMotion.y / MAX_FALL_SPEED;
 				time_since_break_fall = -(shake_precentage * IMMOBILTIY_AFTER_FALL_DURATION);
 				$Camera2D.shake(abs(time_since_break_fall), 300 * shake_precentage, 10 * shake_precentage);
@@ -133,12 +132,21 @@ func _physics_process(delta):
 			motion.x = lerp(motion.x, -MAX_SPEED, 0.2);
 	$Sprite.flip_v = false;
 	
-	# Ignore 2nd roll in air
-	if roll && air_time <= time_since_roll_click:
-		time_since_roll_click = 0.0;
+	if roll && air_time > 0 && !time_since_roll_click && motion.y > 0:
+		motion.y = -100;
+		motion.x = motion.x / 3;
+		time_since_roll_click = true;
 	
-	if time_since_roll_click < SAFE_LANDING_AFTER_ROLL_TIME_WINDOW:
-		$Sprite.flip_v = true;
+	if air_time == 0:
+		time_since_roll_click = false;
+	
+	if time_since_roll_click && air_time > 0:
+		motion.y = min(motion.y - GRAVITY / 2, DANGER_FALL_SPEED / 4);
+		if motion.x > 0:
+			motion.x = min(motion.x, MAX_SPEED / 4);
+		elif motion.x < 0:
+			motion.x = max(motion.x, -MAX_SPEED / 4);
+		animation = "Parachute";
 	
 	# TODO maybe have a staate???
 	if time_since_break_fall < 0:
@@ -169,7 +177,6 @@ func _physics_process(delta):
 	
 	motion = move_and_slide(motion, UP);
 	time_since_dash += delta;	
-	time_since_roll_click += delta;
 	time_since_jump += delta;
 	$Sprite.play(animation);
 
