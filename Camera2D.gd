@@ -53,8 +53,8 @@ func shake(duration, frequency, amplitude):
     set_offset(get_offset() - _last_offset)
     _last_offset = Vector2(0, 0)
 	
-const MAX_ZOOM_OUT = 2;
-const MAX_ZOOM_IN = 1;
+const MAX_ZOOM_OUT = 2.5;
+const MAX_ZOOM_IN = 1.2;
 const MAX_ZOOM_OUT_VELOCITY = 1200;
 const ZOOM_HISTORY_LENGTH = 100;
 
@@ -85,13 +85,21 @@ func set_zoom_from_motion(motion):
 
 const MAX_OFFSET_X = 400;
 const MAX_OFFSET_Y = 250;
-const MAX_OFFSET_VELOCITY = 900;
+const MAX_OFFSET_VELOCITY_X = 600;
+const MAX_OFFSET_VELOCITY_Y = 900;
 
 var current_offset = Vector2();
 func offset_for_motion(motion):
 	var target = Vector2();
-	target.x = (motion.x / MAX_OFFSET_VELOCITY) * MAX_OFFSET_X;
-	target.y = (motion.y / MAX_OFFSET_VELOCITY) * MAX_OFFSET_Y;
+	if motion.x >= 0:
+		target.x = min((motion.x / MAX_OFFSET_VELOCITY_X) * MAX_OFFSET_X, MAX_OFFSET_X);
+	else:
+		target.x = max((motion.x / MAX_OFFSET_VELOCITY_X) * MAX_OFFSET_X, -MAX_OFFSET_X);
+	
+	if motion.y >= 0:
+		target.y = min((motion.y / MAX_OFFSET_VELOCITY_Y) * MAX_OFFSET_Y, MAX_OFFSET_Y);
+	else:
+		target.y = max((motion.y / MAX_OFFSET_VELOCITY_Y) * MAX_OFFSET_Y, -MAX_OFFSET_Y);
 	current_offset = lerp(current_offset, target, 0.02);
 	set_offset(current_offset);
 	

@@ -70,7 +70,8 @@ func _physics_process(delta):
 				$Sprite.flip_h = true;
 				motion.x = max(motion.x - AIR_ACCELERATION, -MAX_SPEED);
 		else:
-			isIdle = true
+			$FrictionParticle.set_emitting(false);
+			isIdle = true;
 			
 	if is_on_floor():
 		air_time = 0;
@@ -119,6 +120,7 @@ func _physics_process(delta):
 		motion.x = 0;
 		motion.y = 0;
 		Input.start_joy_vibration(0, 0.7 + time_since_dash, 0.7 + time_since_dash, time_since_dash * 10)
+		animation = "Dash";
 	if time_since_dash >= -0.2 && time_since_dash <= 0:
 		if is_on_wall():
 			time_since_dash = 0;
