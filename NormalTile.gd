@@ -9,7 +9,7 @@ func _ready():
 		grid[n] = [];
 		grid[n].resize(51);
 		for m in 51:
-			if n % 50 == 0 or m % 50 == 0:
+			if n % 30 == 0 or m % 50 == 0:
 				if randi() % 20 == 0:
 					grid[n][m] = -1;
 				else:
