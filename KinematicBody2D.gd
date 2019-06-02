@@ -74,7 +74,6 @@ func _physics_process(delta):
 			isIdle = true;
 			
 	if is_on_floor():
-		air_time = 0;
 		if lastFrameMotion.y > DANGER_FALL_SPEED:
 			if !time_since_roll_click:
 				shake_precentage = lastFrameMotion.y / MAX_FALL_SPEED;
@@ -85,7 +84,7 @@ func _physics_process(delta):
 				$DropParticle.set_lifetime(abs(time_since_break_fall));
 				$DropParticle.get_process_material().set_param(ParticlesMaterial.PARAM_SCALE, 10 * shake_precentage);
 				$DropParticle.set_emitting(true);
-
+		air_time = 0;
 		if isIdle:
 			# Avoid very slow deaccl when velocity is close to 0
 			if (abs(motion.x) < ACCELERATION):
