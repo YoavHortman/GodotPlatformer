@@ -83,7 +83,7 @@ func set_zoom_from_motion(motion):
 	
 	set_zoom(current_zoom);
 
-const MAX_OFFSET_X = 400;
+const MAX_OFFSET_X = 500;
 const MAX_OFFSET_Y = 250;
 const MAX_OFFSET_VELOCITY_X = 600;
 const MAX_OFFSET_VELOCITY_Y = 900;
